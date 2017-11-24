@@ -29,7 +29,7 @@ public final class Crawler {
     public Crawler() {
     }
 
-    private final List<String> getResultURLsFromGoogleSearchAPI(String queryString) throws IOException {
+    private static final List<String> getResultURLsFromGoogleSearchAPI(String queryString) throws IOException {
 
         List<String> results = new ArrayList<String>();
 
@@ -87,7 +87,7 @@ public final class Crawler {
         return results;
     }
 
-    private final List<String> getJavascriptLibrariesFromURL(String urlString) throws IOException {
+    private static final List<String> getJavascriptLibrariesFromURL(String urlString) throws IOException {
 
         List<String> javascriptLibraries = new ArrayList<String>();
 
@@ -158,7 +158,7 @@ public final class Crawler {
         return javascriptLibraries;
     }
 
-    private final String calculateCheckSum(byte[] content) {
+    private static final String calculateCheckSum(byte[] content) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -172,7 +172,7 @@ public final class Crawler {
         }
     }
 
-    private final byte[] readUrlContent(InputStream is) throws IOException {
+    private static final byte[] readUrlContent(InputStream is) throws IOException {
 
         //We have to read the stream into a byte array
         BufferedInputStream bis = new BufferedInputStream(is);
@@ -192,7 +192,7 @@ public final class Crawler {
         return content;
     }
 
-    private final String getFileNameFromURLPath(String path) {
+    private static final String getFileNameFromURLPath(String path) {
 
         String filename = path.substring(path.lastIndexOf("/") + 1, path.length());
         String filenameNoExtension = filename.substring(0, filename.indexOf("."));
@@ -200,7 +200,7 @@ public final class Crawler {
         return filename;
     }
 
-    private final Map<String, Map<String, Integer>> countLibraries(List<String> javascriptLibrariesUrls) throws IOException {
+    private static final Map<String, Map<String, Integer>> countLibraries(List<String> javascriptLibrariesUrls) throws IOException {
 
         /*
          * We define a Map structure to store the libraries.
@@ -234,10 +234,10 @@ public final class Crawler {
         return entries;
     }
 
-    public final List<Map.Entry<String, Integer>> executeSearchQuery(String queryString)
+    public static final List<Map.Entry<String, Integer>> executeSearchQuery(String queryString)
             throws IOException, NoSuchAlgorithmException {
 
-        List<String> urls = this.getResultURLsFromGoogleSearchAPI(queryString);
+        List<String> urls = getResultURLsFromGoogleSearchAPI(queryString);
 
         Map<String, Map<String, Integer>> intermediate = null;
         Map<String, Integer> value;
