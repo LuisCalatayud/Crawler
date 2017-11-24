@@ -27,7 +27,7 @@ public class Main {
 
         try {
             List<Map.Entry<String, Integer>> results = crawler.executeSearchQuery(query);
-
+            System.out.println("\nTop 5 Javascript Libraries used:");
             for(int i = 0; i < 5; i++) { //We print the 5 most used Javascript libraries
                 System.out.println(results.get(i).getKey() + ": " + results.get(i).getValue());
             }
