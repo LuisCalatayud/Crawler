@@ -5,20 +5,22 @@ Explanation of steps took into account to resolve the assignment:
 ## First Step: Get the results from Google
 
 Naturally I instantly though about the usage of the Google Search API’s to get the results for a certain string query.  In order to do this I had to set a Google API Key from their website and later on, I had to create a Custom Search Engine to search all the web. The Google API was straightforward to use as it provides a simple URL interface to get the search results in JSON format. This is the URL used:
+
 https://www.googleapis.com/customsearch/v1?key=%s&cx=%s&start=%s&q=%s
+
 Meaning of parameters:
-•	Key: Google API key set to use the API.
-•	Cx: Custom Search Engine to search all the web.
-•	Start: Results start page (by default it’s 1)
-•	Q: Search term.
+1. Key: Google API key set to use the API.
+2. Cx: Custom Search Engine to search all the web.
+3. Start: Results start page (by default it’s 1)
+4. Q: Search term.
 A HttpURLConnection was made to fetch the results given by the API. These results where formatted in JSON and had to be “parsed” to be easily manipulated by the program.
 
 ## Second Step: Read the JSON
 
 Java provides an API to process JSON via the package javax.json which contains all the interfaces used for JSON manipulation. As this package contains only intefaces (i.e. functions skeletons with no actual working functionality)  I had to download an implementation of the packages. The org.glassfish javax.json implementation was chosen because it is proved to be reliable.
 The function getResultURLsFromGoogleSearchAPI(String queryString) is the one that fetchs the results from the Google API and returns a List of the webpages URLS. The resulting JSON Object has the following needed attributes:
-•	items: a collection of search results.
-•	link: a string containing the URL for each search result.
+1. items: a collection of search results.
+2. link: a string containing the URL for each search result.
 I stored all the links into a List.
  
 ## Third Step: Fetching contents of search results webpages
