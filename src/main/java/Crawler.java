@@ -180,18 +180,16 @@ public final class Crawler {
     private static final byte[] readUrlContent(InputStream is) throws IOException {
 
         //We have to read the stream into a byte array
-        BufferedInputStream bis = new BufferedInputStream(is);
         byte[] chunk = new byte[4096]; //We are going to read the stream in 4KB chunks
-
+        int length = 0;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        while((bis.read(chunk)) > 0) {
-            out.write(chunk);
+        while((length = is.read(chunk)) != -1) {
+            out.write(chunk, 0, length);
         }
 
         byte[] content = out.toByteArray();
 
-        bis.close();
         out.close();
 
         return content;
@@ -208,7 +206,7 @@ public final class Crawler {
 
         /*
          * We define a Map structure to store the libraries.
-         * String key: MD5 checksum of the content.
+         * String key: checksum of the content.
          * Map<String, Integer> value: Map to store the name of the Javascript Library (String key)
          * and the occurrences counter (Integer value). We use this structure to prevent duplication
          */
@@ -217,6 +215,8 @@ public final class Crawler {
         for(String jsurl : javascriptLibrariesUrls) { //We again have to iterate all the found Javascript URLs
             URL url = new URL(jsurl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/javascript");
 
             //We discard the url if we can't retrieve it
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
@@ -229,8 +229,8 @@ public final class Crawler {
 
             if(!entries.containsKey(checksum)) { //If it's not found, we add it
                 Map<String, Integer> m = new HashMap<String, Integer>();
-                m.put(getFileNameFromURLPath(url.getPath()), 1);
-                entries.put(checksum, m);
+                m.put(getFileNameFromURLPath(url.getPath()), 1); //Path of the url as key and occurrence counter as value
+                entries.put(checksum, m); //We put the checksum as key with the path and occurrence counter as value
             }
 
             connection.disconnect();
@@ -253,26 +253,27 @@ public final class Crawler {
             System.out.println("Processing: " + url);
 
             try {
-                //For concurrency we have to execute each url into a separate thread
+                //TO - DO: For concurrency we have to execute each url into a separate thread
                 intermediate = countLibraries(getJavascriptLibrariesFromURL(url)); //We count libraries per each Google API Result URL
             }
             catch(IOException a) {
                 System.out.println("\t Failed to process: " + a.getMessage());
+                continue;
             }
             catch(RuntimeException b) {
                 System.out.println("\t Failed to process: " + b.getMessage());
+                continue;
             }
 
-            //We have to protect the final results variable with a mutex
             for(String key : intermediate.keySet()) { //Then merge the intermediate results with final results
 
-                if(!finalResults.containsKey(key)) {
-                    finalResults.put(key, intermediate.get(key));
+                if(!finalResults.containsKey(key)) { //If the checksum doesn't exists in finalResults
+                    finalResults.put(key, intermediate.get(key)); //We add the occurences
                 }
                 else {
                     value = finalResults.get(key);
                     for(String key2 : value.keySet()) {
-                        value.put(key2, value.get(key2) + 1);
+                        value.put(key2, value.get(key2) + intermediate.get(key).get(key2));
                     }
                     finalResults.put(key, value);
                 }
