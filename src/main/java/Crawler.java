@@ -165,6 +165,11 @@ public final class Crawler {
             md.update(content);
             byte[] checksum = md.digest();
 
+            /*
+            * We convert te digest message into a legible Hex String.
+            * This is marked as deprecated in Java 9.
+            * TO - DO: find another solution
+            */
             return DatatypeConverter.printHexBinary(checksum);
 
         } catch (NoSuchAlgorithmException e) {
@@ -195,7 +200,6 @@ public final class Crawler {
     private static final String getFileNameFromURLPath(String path) {
 
         String filename = path.substring(path.lastIndexOf("/") + 1, path.length());
-        String filenameNoExtension = filename.substring(0, filename.indexOf("."));
 
         return filename;
     }
@@ -228,6 +232,8 @@ public final class Crawler {
                 m.put(getFileNameFromURLPath(url.getPath()), 1);
                 entries.put(checksum, m);
             }
+
+            connection.disconnect();
 
         }
 
