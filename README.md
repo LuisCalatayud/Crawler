@@ -32,7 +32,9 @@ After I got all the resulting links, fetching the HTML contents was the next ste
 ## Fourth Step: Extract Javascript Libraries
 
 As I was getting the HTML line by line a simple idea to filter innecessary elements was to check if the line contained the following tag “<script”. Even though this needs to be improved because it may happen that there are multiple script tags in one line. After filtering I need to extract the src attribute of the found script tags, the method used was to match a regular expression and later on extract the src links.
+
 To prevent duplication of a script inside a page what I did was to first check the src links obtained using a LookUp table (using a HashTable in Java), first searching them in the LookUp table, if it is found inside the table then I discard it, if not I add it. This is a naive first filter but also I needed to check the contents for each Javascript file and making a checksum of it, then I store the checksum inside another lookup table along with the filename and occurrence counter. The checksum assures contents are the same if the file hasn’t been modified. This is useful to check libraries which have the same content but different names. countLibraries(List<String> javascriptLibrariesUrls) is in charge of these functionalities.
+
 The structure used is described:
 Map<String, Map<String, Integer>> structure
 Datatypes meaning:
