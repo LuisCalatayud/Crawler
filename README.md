@@ -21,17 +21,18 @@ A HttpURLConnection was made to fetch the results given by the API. These result
 Java provides an API to process JSON via the package javax.json which contains all the interfaces used for JSON manipulation. As this package contains only intefaces (i.e. functions skeletons with no actual working functionality)  I had to download an implementation of the packages. The org.glassfish javax.json implementation was chosen because it is proved to be reliable.
 The function getResultURLsFromGoogleSearchAPI(String queryString) is the one that fetchs the results from the Google API and returns a List of the webpages URLS. The resulting JSON Object has the following needed attributes:
 1. items: a collection of search results.
-2. link: a string containing the URL for each search result.
-I stored all the links into a List.
+  a. link: a string containing the URL for each search result.
+
+I then used the javax.json implementation to "parse" the JSON Object and get the links and store then into a List
  
 ## Third Step: Fetching contents of search results webpages
 
-After I got all the resulting links, fetching the HTML contents was the next step to take. What I did was to open an HttpURLConnection and get the HTML line by line using a Buffered Reader. The function delegated to this task is getJavascriptLibrariesFromURL(String url) 
+After I got all the resulting links, fetching the HTML contents was the next step to take. What I did was to open an HttpURLConnection and get the HTML line by line using the InputStream of the HttpURLConnection. The function in charge to this task is getJavascriptLibrariesFromURL(String url) 
 
 ## Fourth Step: Extract Javascript Libraries
 
 As I was getting the HTML line by line a simple idea to filter innecessary elements was to check if the line contained the following tag “<script”. Even though this needs to be improved because it may happen that there are multiple script tags in one line. After filtering I need to extract the src attribute of the found script tags, the method used was to match a regular expression and later on extract the src links.
-To prevent duplication of a script inside a page what I did was to first check the src links obtained using a LookUp table (using a HashTable in Java), first searching them in the LookUp table, if it is found inside the table then I discard it, if not I add it. This is a naive first filter but also was needed to check the contents for each Javascript file and making a checksum of it, then I store the checksum inside another lookup table along with the filename and occurrence counter. The checksum assures contents are the same if the file hasn’t been modified. This is useful to check libraries which have the same content but different names. countLibraries(List<String> javascriptLibrariesUrls) is in charge of these functionalities.
+To prevent duplication of a script inside a page what I did was to first check the src links obtained using a LookUp table (using a HashTable in Java), first searching them in the LookUp table, if it is found inside the table then I discard it, if not I add it. This is a naive first filter but also I needed to check the contents for each Javascript file and making a checksum of it, then I store the checksum inside another lookup table along with the filename and occurrence counter. The checksum assures contents are the same if the file hasn’t been modified. This is useful to check libraries which have the same content but different names. countLibraries(List<String> javascriptLibrariesUrls) is in charge of these functionalities.
 The structure used is described:
 Map<String, Map<String, Integer>> structure
 Datatypes meaning:
@@ -39,4 +40,6 @@ Map<Checksum, Map<Javascritp Library URL, Ocurrence Counter>>
 
 ## Fifth Step: Merge results
 
-For each of the URLS obtained in step number two, we obtain the occurrence of javascript libraries. Now we have to merge the results in a final structure in which we sum the occurrences of each library in the urls extracted. 
+For each of the URLS obtained in step number two, we obtain the occurrence of Javascript libraries. Now we have to merge the results in a final structure in which we sum the occurrences of each library in the urls extracted. Once again the use of a structure containing the checksum and a url - occurence counter is used. 
+
+Finally, results are sorted by the sum of all the occurrences and then the 5 most used libraries are printed
