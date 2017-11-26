@@ -13,6 +13,7 @@ Meaning of parameters:
 2. Cx: Custom Search Engine to search all the web.
 3. Start: Results start page (by default it’s 1)
 4. Q: Search term.
+
 A HttpURLConnection was made to fetch the results given by the API. These results where formatted in JSON and had to be “parsed” to be easily manipulated by the program.
 
 ## Second Step: Read the JSON
