@@ -160,7 +160,7 @@ public final class Crawler {
 
     private static final String calculateCheckSum(byte[] content) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
 
             md.update(content);
             byte[] checksum = md.digest();
@@ -249,11 +249,11 @@ public final class Crawler {
         Map<String, Integer> value;
         Map<String, Map<String, Integer>> finalResults = new HashMap<String, Map<String, Integer>>();
 
+        //TO - DO: For concurrency we have to execute a batch of urls into a thread
         for(String url: urls) {
             System.out.println("Processing: " + url);
 
             try {
-                //TO - DO: For concurrency we have to execute each url into a separate thread
                 intermediate = countLibraries(getJavascriptLibrariesFromURL(url)); //We count libraries per each Google API Result URL
             }
             catch(IOException a) {
